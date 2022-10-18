@@ -1,0 +1,16 @@
+<template id="mainTemplate">
+    <mac-button id="button">Button</mac-button>
+</template>
+<script>
+    'use strict';
+    window.customElements.define('app-main', class extends NMComponent {
+        constructor() {
+            super();
+            this.attachTemplate('mainTemplate');
+            
+            this.shadowRoot.getElementById('button').addEventListener('click', (e) => {
+                console.log(e);
+            })
+        }
+    })
+</script>
