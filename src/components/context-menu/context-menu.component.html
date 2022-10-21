@@ -1,0 +1,79 @@
+<template id="contentMenuTemplate">
+    <style>
+        .context-menu {
+            background: rgba(0, 0, 0, .15);
+            backdrop-filter: blur(10px);
+            border-radius: 4px;
+            position: fixed;
+            padding: 4px 0;
+        }
+
+        .context-menu_sub {
+            position: absolute;
+            left: 100%;
+            top: -4px;
+        }
+
+        .context-menu:not([data-state=open]) {
+            display: none;
+        }
+
+        .context-menu[data-state=open] {
+            display: block;
+        }
+    </style>
+    <div class="context-menu">
+        <slot></slot>
+    </div>
+</template>
+<script>
+    window.customElements.define('mac-context-menu', class ContextMenuComponent extends NMComponent {
+        static ATTR_STATE = 'data-state';
+        static STATE_OPENED = 'open';
+        static STATE_CLOSED = 'closed';
+
+        constructor() {
+            super();
+
+            this.attachTemplate('contentMenuTemplate');
+            this._checkIsSubmenu();
+        }
+
+        attributeChangedCallback(name, oldValue, newValue) {
+            switch (name) {
+                case ContentMenuItemComponent.ATTR_STATE:
+                    _attrStateChagned(oldValue, newValue);
+                    break;
+            }
+        }
+
+        open(x, y) {
+            if (!this.isSubmenu) {
+                this.shadowRoot.querySelector('.context-menu').style.left = `${x}px`;
+                this.shadowRoot.querySelector('.context-menu').style.top = `${y}px`;
+            }
+
+            this.setAttribute(ContextMenuComponent.ATTR_STATE, ContextMenuComponent.STATE_OPENED);
+            this.shadowRoot.querySelector('.context-menu').setAttribute(ContextMenuComponent.ATTR_STATE, ContextMenuComponent.STATE_OPENED);
+        }
+
+        close() {
+            this.setAttribute(ContextMenuComponent.ATTR_STATE, ContextMenuComponent.STATE_CLOSED);
+            this.shadowRoot.querySelector('.context-menu').setAttribute(ContextMenuComponent.ATTR_STATE, ContextMenuComponent.STATE_CLOSED);
+        }
+
+        _attrStateChagned() {
+            //
+        }
+
+        _checkIsSubmenu() {
+
+            if (this.parentElement instanceof ContentMenuItemComponent) {
+                this.isSubmenu = true;
+                this.shadowRoot.querySelector('.context-menu').classList.add('context-menu_sub');
+                this.parentElement.attachSubmenu(this);
+            }
+        }
+
+    });
+</script>

@@ -1,5 +1,30 @@
 <template id="mainTemplate">
     <mac-button id="button">Button</mac-button>
+    <!-- 
+    <mac-window>
+        <mac-button id="button">Accept</mac-button>
+        <mac-button id="button">Close</mac-button>
+    </mac-window> -->
+
+    <mac-context-menu id="mainContext">
+        <mac-context-menu-item>New Folder</mac-context-menu-item>
+        <mac-context-menu-br></mac-context-menu-br>
+        <mac-context-menu-item id="test">Get Info</mac-context-menu-item>
+        <mac-context-menu-br></mac-context-menu-br>
+        <mac-context-menu-item>
+            Arrange By
+            <mac-context-menu>
+                <mac-context-menu-item>Name</mac-context-menu-item>
+                <mac-context-menu-item>Date</mac-context-menu-item>
+                <mac-context-menu-item>Size</mac-context-menu-item>
+                <mac-context-menu-br></mac-context-menu-br>
+                <mac-context-menu-item>None</mac-context-menu-item>
+            </mac-context-menu>
+
+        </mac-context-menu-item>
+        <mac-context-menu-item>Show View Options</mac-context-menu-item>
+    </mac-context-menu>
+
 </template>
 <script>
     'use strict';
@@ -7,10 +32,31 @@
         constructor() {
             super();
             this.attachTemplate('mainTemplate');
-            
+
             this.shadowRoot.getElementById('button').addEventListener('click', (e) => {
                 console.log(e);
+            });
+
+            // console.log(this.shadowRoot.querySelector('mac-window'));
+            const mainContext = this.shadowRoot.getElementById('mainContext');
+            document.addEventListener('contextmenu', e => {
+                e.preventDefault();
+                mainContext.open(e.clientX, e.clientY);
             })
+
+            this.shadowRoot.getElementById('button').addEventListener('click', () => {
+                this.shadowRoot.getElementById('test').innerHTML += `
+                <mac-context-menu>
+                    <mac-context-menu-item>Name</mac-context-menu-item>
+                    <mac-context-menu-item>Date</mac-context-menu-item>
+                    <mac-context-menu-item>Size</mac-context-menu-item>
+                    <mac-context-menu-br></mac-context-menu-br>
+                    <mac-context-menu-item>None</mac-context-menu-item>
+                </mac-context-menu>
+                `;
+            });
+
+            // this.shadowRoot.querySelector('mac-window').addEventListener('closeClick', console.log);
         }
     })
 </script>

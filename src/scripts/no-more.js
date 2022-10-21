@@ -21,3 +21,15 @@ class NMComponent extends HTMLElement {
         this.attachShadow({ mode: 'open' }).appendChild(template.cloneNode(true));
     }
 }
+
+class NMEvent extends Event {
+    constructor(type, iventInitDict, data) {
+        super(type, iventInitDict);
+        this.iventInitDict = iventInitDict;
+        this.data = data;
+    }
+
+    clone() {
+        return new NMEvent(this.type, this.iventInitDict, this.data);
+    }
+}
