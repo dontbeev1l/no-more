@@ -1,10 +1,8 @@
-import { readdir, cp, rm, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { readdir, cp, rm, mkdir, readFile, writeFile, watch } from 'node:fs/promises';
 import { config } from './config.mjs';
 
-(async () => {
-
+async function build() {
     console.log(config.sourceDir);
-    const dir = await readdir(config.sourceDir);
 
     await rm(config.dist, { recursive: true, force: true });
     await mkdir(config.dist);
@@ -35,7 +33,11 @@ import { config } from './config.mjs';
     let indexContent = await readFile(indexPath, { encoding: 'utf-8' });
     indexContent = indexContent.replace('</body>', componentsSrc + '</body>');
     writeFile(indexPath, indexContent);
+}
 
+for await (const change of watch(config.sourceDir, { recursive: true })) {
+    console.log(change);
+    await build();
+}
 
-})();
 
