@@ -1,0 +1,78 @@
+<template id="windowTemplate">
+    <style>
+        .window {
+            position: fixed;
+            box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.15);
+            background: #F7F7F7;
+            border: 0.5px solid rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            min-width: 300px;
+            min-height: 200px;
+        }
+
+        .window-content {
+            flex-grow: 1;
+            width: 100%;
+        }
+    </style>
+    <div class="window">
+        <mac-window-title class="window-title" draggable="true">This is window</mac-window-title>
+        <div class="window-content">
+            <slot></slot>
+        </div>
+    </div>
+</template>
+
+<script>
+    'use strict';
+
+    window.customElements.define('mac-window', class MacWindowComponent extends NMComponent {
+        static BORDER_FIXING_SIZE = 0.5;
+        static ZERO_FIXING_AREA = 50;
+
+        constructor() {
+            super();
+
+            this.attachTemplate('windowTemplate');
+            this._addDrag();
+
+            this.position = { x: +this.getAttribute('data-position-x') || 0, y: +this.getAttribute('data-position-x') || 0 };
+            this.updatePosition();
+
+            this.listenClosing();
+        }
+
+        listenClosing() {
+            this.shadowRoot.querySelector('mac-window-title').addEventListener('closeClick', (e) => this.dispatchEvent(e.clone()));
+        }
+
+        updatePosition() {
+            this.shadowRoot.querySelector('.window').style.left = `${this.position.x}px`;
+            this.shadowRoot.querySelector('.window').style.top = `${this.position.y}px`;
+        }
+
+        _addDrag() {
+            const titleElement = this.shadowRoot.querySelector('.window-title');
+            const offset = { x: 0, y: 0 };
+
+            titleElement.addEventListener('dragstart', e => {
+                const rect = titleElement.getBoundingClientRect();
+                offset.x = e.clientX - rect.x + MacWindowComponent.BORDER_FIXING_SIZE;
+                offset.y = e.clientY - rect.y + MacWindowComponent.BORDER_FIXING_SIZE;
+            });
+
+            titleElement.addEventListener('drag', e => {
+                if (e.clientX === 0 && e.clientY === 0
+                    && (this.position.x > MacWindowComponent.ZERO_FIXING_AREA || this.position.y > MacWindowComponent.ZERO_FIXING_AREA)
+                ) { return; }
+
+                this.position.x = e.clientX - offset.x;
+                this.position.y = e.clientY - offset.y;
+
+                this.updatePosition()
+            });
+        }
+
+    });
+</script>
