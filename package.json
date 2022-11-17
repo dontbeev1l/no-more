@@ -1,7 +1,7 @@
 {
   "name": "no-more",
   "version": "0.0.1",
-  "description": "Simple JS lib for build WebComponents, that use default API ",
+  "description": "How to use Components API, and other JS Api, for build WebApp. And some tools for build ",
   "main": "index.js",
   "scripts": {
     "build": "node ./index.mjs"
